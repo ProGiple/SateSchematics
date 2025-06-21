@@ -63,8 +63,10 @@ public class ClipboardSubCommand implements LunaCompleter {
                 return;
             }
 
-            if (UndoManager.paste(player.getUniqueId(), schematic, player.getLocation()) != null)
+            if (UndoManager.paste(player.getUniqueId(), schematic, player.getLocation()) != null) {
+                player.teleport(schematic.getOffsetLocation(player.getLocation()));
                 Config.sendMessage(player, "paste", "id-%-" + schematic.getId());
+            }
         }
     }
 }

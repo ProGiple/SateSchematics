@@ -38,7 +38,9 @@ public class PasteSubCommand implements LunaCompleter {
         }
 
         Player player = (Player) sender;
-        if (UndoManager.paste(player.getUniqueId(), schematic, player.getLocation()) != null)
+        if (UndoManager.paste(player.getUniqueId(), schematic, player.getLocation()) != null) {
+            player.teleport(schematic.getOffsetLocation(player.getLocation()));
             Config.sendMessage(sender, "paste", "id-%-" + schematic.getId());
+        }
     }
 }

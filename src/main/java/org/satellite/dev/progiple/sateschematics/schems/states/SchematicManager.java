@@ -1,5 +1,6 @@
 package org.satellite.dev.progiple.sateschematics.schems.states;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
 
 @UtilityClass
 public class SchematicManager {
+    @Getter
     private final LunaMap<Player, Location, Location> locationMap = new LunaMap<>();
     private final Set<YAMLSchematic> YAML_SCHEMATICS = new HashSet<>();
 

@@ -1,4 +1,11 @@
 minVector: 0;0;1
 maxVector: 0;0;1
+settings:
+  offsets:
+    x: 0
+    y: 0
+    z: 0
+    connectPlayer: false
+  ignoreAir: true
 vectors:
   0;0;1: ==SchemBlock

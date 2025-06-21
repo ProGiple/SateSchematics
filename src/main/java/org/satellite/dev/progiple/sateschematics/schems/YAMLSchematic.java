@@ -1,6 +1,7 @@
 package org.satellite.dev.progiple.sateschematics.schems;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -29,6 +30,7 @@ public class YAMLSchematic {
     private final Vector maxVector;
     private final String id;
 
+    @Setter private Settings settings;
     private boolean maySaving;
     public YAMLSchematic(Location pos1, Location pos2, Location center, String id) {
         this.id = id;
@@ -49,10 +51,11 @@ public class YAMLSchematic {
                 .map(b -> new SchemBlock(b.getBlock(), center))
                 .collect(Collectors.toSet());
         this.maySaving = true;
+        this.settings = new Settings();
     }
 
     public YAMLSchematic(Location pos1, Location pos2, String id) {
-       this(pos1, pos2, SchematicManager.getBlockCenter(pos1, pos2), id);
+        this(pos1, pos2, SchematicManager.getBlockCenter(pos1, pos2), id);
     }
 
     public YAMLSchematic(Location pos1, Location pos2, Player player, String id) {
@@ -72,6 +75,7 @@ public class YAMLSchematic {
                 .map(k -> new SchemBlock(Objects.requireNonNull(vectorSection.getConfigurationSection(k))))
                 .collect(Collectors.toSet());
         this.maySaving = false;
+        this.settings = new Settings().load(this.config.getSection("settings"));
     }
 
     public File getFile() {
@@ -101,6 +105,7 @@ public class YAMLSchematic {
 
         ConfigurationSection finalParentSection = parentSection;
         this.schemBlocks.forEach(s -> s.createSection(finalParentSection));
+        this.settings.save(this.config.getSection("settings"));
         this.config.save();
 
         this.maySaving = false;
@@ -112,13 +117,17 @@ public class YAMLSchematic {
         Bukkit.getPluginManager().callEvent(schematicEvent);
         if (schematicEvent.isCancelled()) return null;
 
+        Location location = this.getOffsetLocation(pasteLoc);
         Set<PastedBlock> blocks = this.schemBlocks
                 .stream()
-                .filter(b -> filter == null || filter.apply(b))
-                .sorted(Comparator.comparing(s1 -> ((SchemBlock) s1).getMaterial().isInteractable()).reversed())
-                .map(s -> s.paste(pasteLoc))
+                .filter(b -> !(this.settings.isIgnoreAir() && b.getMaterial().isAir()) && (filter == null || filter.apply(b)))
+                .map(s -> s.paste(location))
                 .collect(Collectors.toSet());
         return new PastedSchematic(pasteLoc, blocks, this.id);
+    }
+
+    public Location getOffsetLocation(Location pasteLocation) {
+        return pasteLocation.clone().add(this.settings.getOffsetX(), this.settings.getOffsetY(), this.settings.getOffsetZ());
     }
 
     public enum SaveMode {
