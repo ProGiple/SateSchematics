@@ -1,0 +1,37 @@
+name: SateSchematics
+version: '${project.version}'
+main: org.satellite.dev.progiple.sateschematics.SateSchematics
+api-version: '1.16'
+authors: [ProGiple]
+depend:
+  - LunaSpring
+  - NBTAPI
+commands:
+  sateschematics:
+    aliases:
+      - sschems
+      - sschem
+      - schem
+      - schems
+      - sateschem
+      - sateschems
+      - schematic
+      - schematics
+      - sateschematic
+permissions:
+  sateschematics.reload:
+    default: op
+  sateschematics.give:
+    default: op
+  sateschematics.save:
+    default: op
+  sateschematics.clipboard:
+    default: op
+  sateschematics.pos:
+    default: op
+  sateschematics.unload:
+    default: op
+  sateschematics.paste:
+    default: op
+  sateschematics.undo:
+    default: op
