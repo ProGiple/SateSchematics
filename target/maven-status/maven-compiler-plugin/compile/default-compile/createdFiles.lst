@@ -1,7 +1,9 @@
 org\satellite\dev\progiple\sateschematics\commands\GiveSubCommand.class
 org\satellite\dev\progiple\sateschematics\schems\events\PasteSchematicEvent.class
 org\satellite\dev\progiple\sateschematics\schems\events\ClipboardLoadSchemEvent.class
+org\satellite\dev\progiple\sateschematics\schems\events\listeners\QuitHandler.class
 org\satellite\dev\progiple\sateschematics\commands\pos\Pos1SubCommand.class
+org\satellite\dev\progiple\sateschematics\schems\Settings.class
 org\satellite\dev\progiple\sateschematics\commands\UndoSubCommand.class
 org\satellite\dev\progiple\sateschematics\commands\pos\Pos2SubCommand.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\PastedManager.class
