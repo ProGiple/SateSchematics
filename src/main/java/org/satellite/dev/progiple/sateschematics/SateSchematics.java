@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.UUID;
 
+@Getter
 public final class SateSchematics extends LunaPlugin {
     @Getter private static SateSchematics INSTANCE;
     @Getter private static UUID consoleUUID = UUID.randomUUID();
@@ -18,20 +19,20 @@ public final class SateSchematics extends LunaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
+        saveDefaultConfig();
         super.onEnable();
 
         this.registerListeners(new InteractHandler(), new QuitHandler());
         this.loadSchems();
 
-        saveDefaultConfig();
         LunaExecutor.initialize(this);
     }
 
-    private void loadSchems() {
-        File dir = new File(INSTANCE.getDataFolder(), "schematics/");
-        if (!dir.exists() || !dir.isDirectory()) return;
+    public void loadSchems() {
+        File schemDir = new File(SateSchematics.getINSTANCE().getDataFolder(), "schematics/");
+        if (!schemDir.exists() || !schemDir.isDirectory()) return;
 
-        File[] files = dir.listFiles();
+        File[] files = schemDir.listFiles();
         if (files == null || files.length == 0) return;
 
         Arrays.stream(files).forEach(SchematicManager::load);

@@ -3,14 +3,14 @@ package org.satellite.dev.progiple.sateschematics.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.novasparkle.lunaspring.API.commands.Invocation;
-import org.novasparkle.lunaspring.API.commands.LunaSpringSubCommand;
 import org.novasparkle.lunaspring.API.commands.annotations.Check;
 import org.novasparkle.lunaspring.API.commands.annotations.SubCommand;
+import org.novasparkle.lunaspring.API.commands.processor.ZeroArgCommand;
 import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.pasted.undo.UndoManager;
 
 @SubCommand(appliedCommand = "sateschematics", commandIdentifiers = "undo")
-@Check(permissions = "sateschematics.undo", flags = LunaSpringSubCommand.AccessFlag.PLAYER_ONLY)
+@Check(permissions = "@.undo", flags = ZeroArgCommand.AccessFlag.PLAYER_ONLY)
 public class UndoSubCommand implements Invocation {
     @Override
     public void invoke(CommandSender sender, String[] strings) {

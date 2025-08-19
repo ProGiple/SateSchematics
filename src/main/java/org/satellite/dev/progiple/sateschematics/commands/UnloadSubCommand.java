@@ -2,7 +2,7 @@ package org.satellite.dev.progiple.sateschematics.commands;
 
 import org.bukkit.command.CommandSender;
 import org.novasparkle.lunaspring.API.commands.LunaCompleter;
-import org.novasparkle.lunaspring.API.commands.annotations.Check;
+import org.novasparkle.lunaspring.API.commands.annotations.Permissions;
 import org.novasparkle.lunaspring.API.commands.annotations.SubCommand;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.Config;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SubCommand(appliedCommand = "sateschematics", commandIdentifiers = "unload")
-@Check(permissions = "sateschematics.unload", flags = {})
+@Permissions("@.unload")
 public class UnloadSubCommand implements LunaCompleter {
     // /sateschematics unload <id>
 

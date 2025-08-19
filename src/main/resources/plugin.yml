@@ -35,3 +35,5 @@ permissions:
     default: op
   sateschematics.undo:
     default: op
+  sateschematics.load:
+    default: op

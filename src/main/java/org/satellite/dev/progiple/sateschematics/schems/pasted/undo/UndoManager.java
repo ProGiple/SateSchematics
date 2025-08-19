@@ -2,7 +2,6 @@ package org.satellite.dev.progiple.sateschematics.schems.pasted.undo;
 
 import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.satellite.dev.progiple.sateschematics.schems.SchemBlock;
 import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;

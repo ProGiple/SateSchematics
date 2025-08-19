@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -16,7 +15,6 @@ import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -37,7 +35,7 @@ public class YAMLSchematic {
         this.id = id;
         if (pos1.getY() > pos2.getY()) {
             Location memoryPos = pos1.clone();
-            pos1 = pos2;
+            pos1 = pos2.clone();
             pos2 = memoryPos;
         }
 
