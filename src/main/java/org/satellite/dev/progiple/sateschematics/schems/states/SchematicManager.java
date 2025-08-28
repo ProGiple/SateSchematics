@@ -102,6 +102,7 @@ public class SchematicManager {
     }
 
     public void load(File file) {
+        YAML_SCHEMATICS.removeIf(s -> s.getFile().equals(file));
         load(new YAMLSchematic(file));
     }
 

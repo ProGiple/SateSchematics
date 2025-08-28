@@ -3,11 +3,13 @@ package org.satellite.dev.progiple.sateschematics.schems.pasted;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.satellite.dev.progiple.sateschematics.schems.events.PasteSchematicEvent;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -52,7 +54,12 @@ public class PastedSchematic {
     }
 
     public void undo() {
-        this.pastedBlocks.forEach(b -> b.nowBlock().setBlockData(b.previousState()));
+        this.pastedBlocks.stream()
+                .sorted(Comparator.comparing(b -> {
+                    Material material = b.previousState().getMaterial();
+                    return (material.hasGravity() || !material.isSolid()) ? 0 : 1;
+                }))
+                .forEach(b -> b.nowBlock().setBlockData(b.previousState()));
         PastedManager.unload(this);
     }
 

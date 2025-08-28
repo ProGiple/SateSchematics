@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -15,6 +16,7 @@ import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -99,14 +101,17 @@ public class YAMLSchematic {
         this.config.setString("minVector", SchematicManager.vectorToString(this.minVector));
         this.config.setString("maxVector", SchematicManager.vectorToString(this.maxVector));
 
+        ConfigurationSection section = this.config.getSection("settings");
+        if (section == null) section = this.config.createSection((String) null, "settings");
+        this.settings.save(section);
+
         ConfigurationSection parentSection = this.config.getSection("vectors");
         if (parentSection == null) parentSection = this.config.createSection((String) null, "vectors");
 
         ConfigurationSection finalParentSection = parentSection;
         this.schemBlocks.forEach(s -> s.createSection(finalParentSection));
-        this.settings.save(this.config.getSection("settings"));
-        this.config.save();
 
+        this.config.save();
         this.maySaving = false;
         return true;
     }
@@ -119,7 +124,9 @@ public class YAMLSchematic {
         Location location = this.getOffsetLocation(pasteLoc);
         Set<PastedBlock> blocks = this.schemBlocks
                 .stream()
-                .filter(b -> !(this.settings.isIgnoreAir() && b.getMaterial().isAir()) && (filter == null || filter.apply(b)))
+                .filter(b -> !(this.settings.isIgnoreAir() && b.getMaterial().isAir())
+                        && (filter == null || filter.apply(b))
+                        && !(this.settings.getIgnoredMaterials().contains(b.getMaterial().name())))
                 .map(s -> s.paste(location))
                 .collect(Collectors.toSet());
         return new PastedSchematic(pasteLoc, blocks, this.id);
