@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.novasparkle.lunaspring.API.commands.LunaCompleter;
+import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
@@ -13,7 +13,7 @@ import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 import java.util.List;
 
 @RequiredArgsConstructor
-public abstract class PosSubCommand implements LunaCompleter {
+public abstract class PosSubCommand implements LunaExecutor {
     private final boolean isFirst;
 
     @Override

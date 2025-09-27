@@ -14,7 +14,7 @@ import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 public class InteractHandler implements Listener {
-    private final CooldownPrevent<Player> playerCooldownPrevent = new CooldownPrevent<>(50);
+    private final CooldownPrevent<Player> playerCooldownPrevent = new CooldownPrevent<>(75);
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {

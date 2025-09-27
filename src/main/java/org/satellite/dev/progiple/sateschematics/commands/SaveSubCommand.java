@@ -3,9 +3,10 @@ package org.satellite.dev.progiple.sateschematics.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.novasparkle.lunaspring.API.commands.LunaCompleter;
+import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.API.commands.annotations.Check;
 import org.novasparkle.lunaspring.API.commands.annotations.SubCommand;
-import org.novasparkle.lunaspring.API.commands.processor.ZeroArgCommand;
+import org.novasparkle.lunaspring.API.commands.processor.NoArgCommand;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
@@ -14,8 +15,8 @@ import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 import java.util.List;
 
 @SubCommand(appliedCommand = "sateschematics", commandIdentifiers = "save")
-@Check(permissions = "@.save", flags = ZeroArgCommand.AccessFlag.PLAYER_ONLY)
-public class SaveSubCommand implements LunaCompleter {
+@Check(permissions = "@.save", flags = NoArgCommand.AccessFlag.PLAYER_ONLY)
+public class SaveSubCommand implements LunaExecutor {
     // sateschematics save [id] [save_type]
 
     @Override

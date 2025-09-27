@@ -1,6 +1,7 @@
 package org.satellite.dev.progiple.sateschematics;
 
 import lombok.Getter;
+import org.novasparkle.lunaspring.API.commands.CommandInitializer;
 import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.LunaPlugin;
 import org.satellite.dev.progiple.sateschematics.schems.events.listeners.InteractHandler;
@@ -25,7 +26,7 @@ public final class SateSchematics extends LunaPlugin {
         this.registerListeners(new InteractHandler(), new QuitHandler());
         this.loadSchems();
 
-        LunaExecutor.initialize(this);
+        CommandInitializer.initialize(this);
     }
 
     public void loadSchems() {

@@ -3,9 +3,10 @@ package org.satellite.dev.progiple.sateschematics.commands;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.novasparkle.lunaspring.API.commands.LunaCompleter;
+import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.API.commands.annotations.Check;
 import org.novasparkle.lunaspring.API.commands.annotations.SubCommand;
-import org.novasparkle.lunaspring.API.commands.processor.ZeroArgCommand;
+import org.novasparkle.lunaspring.API.commands.processor.NoArgCommand;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SubCommand(appliedCommand = "sateschematics", commandIdentifiers = "paste")
-@Check(permissions = "@.paste", flags = ZeroArgCommand.AccessFlag.PLAYER_ONLY)
-public class PasteSubCommand implements LunaCompleter {
+@Check(permissions = "@.paste", flags = NoArgCommand.AccessFlag.PLAYER_ONLY)
+public class PasteSubCommand implements LunaExecutor {
     @Override
     public List<String> tabComplete(CommandSender sender, List<String> list) {
         return list.size() == 1 ? Utils.tabCompleterFiltering(SchematicManager.getSchematics()
