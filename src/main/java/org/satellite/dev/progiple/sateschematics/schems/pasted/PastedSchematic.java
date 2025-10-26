@@ -9,9 +9,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.satellite.dev.progiple.sateschematics.schems.events.PasteSchematicEvent;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Getter
@@ -54,12 +52,18 @@ public class PastedSchematic {
     }
 
     public void undo() {
-        this.pastedBlocks.stream()
-                .sorted(Comparator.comparing(b -> {
-                    Material material = b.previousState().getMaterial();
-                    return (material.hasGravity() || !material.isSolid()) ? 0 : 1;
-                }))
-                .forEach(b -> b.nowBlock().setBlockData(b.previousState()));
+        List<PastedBlock> blocks = new ArrayList<>(this.pastedBlocks);
+        blocks.sort(Comparator.comparingInt(b -> {
+                    Material m = b.previousState().getMaterial();
+                    if (m.hasGravity() || !m.isSolid()) return 0;
+                    if (m.name().contains("SIGN") ||
+                            m.name().contains("DOOR") ||
+                            m.name().contains("BUTTON") ||
+                            m.name().contains("TORCH")) return 0;
+                    return 1;
+                })
+        );
+        blocks.forEach(b -> b.nowBlock().setBlockData(b.previousState()));
         PastedManager.unload(this);
     }
 
