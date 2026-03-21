@@ -15,6 +15,6 @@ public class ReloadSubCommand implements Invocation {
         Config.reload();
         Config.sendMessage(commandSender, "reload");
 
-        SateSchematics.getINSTANCE().loadSchems();
+        SateSchematics.getInstance().loadSchems();
     }
 }

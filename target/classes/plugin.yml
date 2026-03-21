@@ -1,5 +1,5 @@
 name: SateSchematics
-version: '1.0.8'
+version: '1.0.9'
 main: org.satellite.dev.progiple.sateschematics.SateSchematics
 api-version: '1.16'
 authors: [ProGiple]

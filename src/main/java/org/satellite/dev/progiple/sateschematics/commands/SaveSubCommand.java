@@ -1,14 +1,15 @@
 package org.satellite.dev.progiple.sateschematics.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.novasparkle.lunaspring.API.commands.LunaCompleter;
 import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.API.commands.annotations.Check;
 import org.novasparkle.lunaspring.API.commands.annotations.SubCommand;
 import org.novasparkle.lunaspring.API.commands.processor.NoArgCommand;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.Config;
+import org.satellite.dev.progiple.sateschematics.SateSchematics;
 import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
@@ -44,8 +45,10 @@ public class SaveSubCommand implements LunaExecutor {
             return;
         }
 
-        SchematicManager.save(schematic);
         Config.sendMessage(player, "save", "id-%-" + strings[1]);
+        Bukkit.getScheduler().runTaskAsynchronously(SateSchematics.getInstance(), () -> {
+            SchematicManager.save(schematic);
+        });
     }
 
     @Override

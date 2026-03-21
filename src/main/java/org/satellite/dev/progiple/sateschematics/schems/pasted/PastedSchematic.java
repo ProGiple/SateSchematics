@@ -9,7 +9,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.satellite.dev.progiple.sateschematics.SateSchematics;
 import org.satellite.dev.progiple.sateschematics.schems.BlockPriority;
 import org.satellite.dev.progiple.sateschematics.schems.events.PasteSchematicEvent;
@@ -94,7 +93,7 @@ public class PastedSchematic {
                 Chunk chunk = entry.getKey();
                 List<PastedBlock> chunkBlocks = entry.getValue();
 
-                Bukkit.getScheduler().runTask(SateSchematics.getINSTANCE(), () -> {
+                Bukkit.getScheduler().runTask(SateSchematics.getInstance(), () -> {
                     for (PastedBlock b : chunkBlocks) {
                         Location loc = b.nowBlock().getLocation();
                         loc.getBlock().setBlockData(b.previousState(), false);

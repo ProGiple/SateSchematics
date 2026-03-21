@@ -2,10 +2,8 @@ package org.satellite.dev.progiple.sateschematics.schems;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -17,7 +15,6 @@ import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +25,8 @@ import java.util.stream.Stream;
 
 @Getter
 public class YAMLSchematic {
+    public static final int PARALLELED_SIZE = 10000;
+
     private final Configuration config;
     private final Set<SchemBlock> schemBlocks;
     private final Vector minVector;
@@ -47,7 +46,7 @@ public class YAMLSchematic {
         this.minVector = pos1.toVector().subtract(center.toVector());
         this.maxVector = pos2.toVector().subtract(center.toVector());
 
-        File file = new File(SateSchematics.getINSTANCE().getDataFolder(), String.format("schematics/%s.yml", id));
+        File file = new File(SateSchematics.getInstance().getDataFolder(), String.format("schematics/%s.yml", id));
         this.config = new Configuration(file);
 
         this.schemBlocks = SchematicManager.getBlocksBetween(pos1, pos2)
@@ -137,8 +136,11 @@ public class YAMLSchematic {
 
         boolean ignoreAir = this.settings != null && this.settings.isIgnoreAir();
         boolean hasFilter = filter != null;
-        Set<PastedBlock> blocks = this.schemBlocks
-                .parallelStream()
+
+        Stream<SchemBlock> stream = this.schemBlocks.size() >= PARALLELED_SIZE ?
+                this.schemBlocks.parallelStream() :
+                this.schemBlocks.stream();
+        Set<PastedBlock> blocks = stream
                 .filter(schemBlock -> {
                     if (ignoreAir && schemBlock.getMaterial().isAir()) {
                         return false;

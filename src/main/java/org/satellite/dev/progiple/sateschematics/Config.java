@@ -9,11 +9,11 @@ import org.novasparkle.lunaspring.API.configuration.IConfig;
 public class Config {
     private final IConfig config;
     static {
-        config = new IConfig(SateSchematics.getINSTANCE());
+        config = new IConfig(SateSchematics.getInstance());
     }
 
     public void reload() {
-        config.reload(SateSchematics.getINSTANCE());
+        config.reload(SateSchematics.getInstance());
     }
 
     public ConfigurationSection getSection(String path) {
