@@ -2,10 +2,11 @@ package org.satellite.dev.progiple.sateschematics.schems;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter @Setter
 public class Settings {
@@ -14,12 +15,17 @@ public class Settings {
     private int offsetZ = 0;
     private boolean connectPlayer = false;
     private boolean ignoreAir = false;
-    private List<String> ignoredMaterials = new ArrayList<>();
+    private Set<Material> ignoredMaterials = new HashSet<>();
 
     public Settings load(ConfigurationSection section) {
         if (section == null) return this;
         this.ignoreAir = section.getBoolean("ignoreAir");
-        this.ignoredMaterials = section.getStringList("ignoredMaterials");
+
+        this.ignoredMaterials = section.getStringList("ignoredMaterials")
+                .stream()
+                .map(Material::matchMaterial)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
         ConfigurationSection offsets = section.getConfigurationSection("offsets");
         if (offsets == null) return this;

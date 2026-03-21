@@ -22,6 +22,7 @@ org\satellite\dev\progiple\sateschematics\Config.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\PastedBlock.class
 org\satellite\dev\progiple\sateschematics\schems\events\listeners\InteractHandler.class
 org\satellite\dev\progiple\sateschematics\schems\items\PosItem.class
+org\satellite\dev\progiple\sateschematics\schems\BlockPriority.class
 org\satellite\dev\progiple\sateschematics\schems\events\AttemptUndoSchematicEvent.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\undo\UndoManager.class
 org\satellite\dev\progiple\sateschematics\schems\SchemBlock.class

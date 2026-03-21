@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -17,8 +18,10 @@ import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -117,19 +120,50 @@ public class YAMLSchematic {
     }
 
     public PastedSchematic paste(Location pasteLoc, Function<SchemBlock, Boolean> filter) {
-        PrePasteSchematicEvent schematicEvent = new PrePasteSchematicEvent(this, pasteLoc, filter);
-        Bukkit.getPluginManager().callEvent(schematicEvent);
-        if (schematicEvent.isCancelled()) return null;
+        if (pasteLoc == null || pasteLoc.getWorld() == null) {
+            throw new IllegalArgumentException("Invalid paste location");
+        }
 
-        Location location = this.getOffsetLocation(pasteLoc);
+        Location offsetLocation = this.getOffsetLocation(pasteLoc.clone());
+
+        PrePasteSchematicEvent schematicEvent = new PrePasteSchematicEvent(this, pasteLoc, filter);
+        if (!schematicEvent.callEvent() || schematicEvent.isCancelled()) {
+            return null;
+        }
+
+        Set<Material> ignoredMaterials = this.settings != null && this.settings.isIgnoreAir() ?
+                this.settings.getIgnoredMaterials() :
+                null;
+
+        boolean ignoreAir = this.settings != null && this.settings.isIgnoreAir();
+        boolean hasFilter = filter != null;
         Set<PastedBlock> blocks = this.schemBlocks
-                .stream()
-                .filter(b -> !(this.settings.isIgnoreAir() && b.getMaterial().isAir())
-                        && (filter == null || filter.apply(b))
-                        && !(this.settings.getIgnoredMaterials().contains(b.getMaterial().name())))
-                .map(s -> s.paste(location))
-                .collect(Collectors.toSet());
+                .parallelStream()
+                .filter(schemBlock -> {
+                    if (ignoreAir && schemBlock.getMaterial().isAir()) {
+                        return false;
+                    }
+
+                    if (ignoredMaterials != null &&
+                            ignoredMaterials.contains(schemBlock.getMaterial())) {
+                        return false;
+                    }
+
+                    return !hasFilter || filter.apply(schemBlock);
+                })
+                .map(s -> s.paste(offsetLocation))
+                .collect(Collectors.toCollection(() -> new HashSet<>(this.schemBlocks.size())));
+
+        if (blocks.isEmpty()) {
+            return null;
+        }
+
         return new PastedSchematic(pasteLoc, blocks, this.id);
+    }
+
+    public CompletableFuture<PastedSchematic> pasteAsync(Location pasteLoc,
+                                                         Function<SchemBlock, Boolean> filter) {
+        return CompletableFuture.supplyAsync(() -> paste(pasteLoc, filter));
     }
 
     public Location getOffsetLocation(Location pasteLocation) {

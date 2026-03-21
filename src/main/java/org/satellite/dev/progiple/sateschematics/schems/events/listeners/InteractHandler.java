@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.novasparkle.lunaspring.API.events.CooldownPrevent;
 import org.novasparkle.lunaspring.API.util.service.managers.NBTManager;
-import org.novasparkle.lunaspring.self.LSConfig;
+import org.novasparkle.lunaspring.self.configuration.Message;
 import org.satellite.dev.progiple.sateschematics.Config;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
@@ -32,7 +32,7 @@ public class InteractHandler implements Listener {
         if (this.playerCooldownPrevent.isCancelled(e, player)) return;
 
         if (!player.hasPermission("sateschematics.pos")) {
-            LSConfig.sendMessage(player, "noPermission");
+            Message.NO_PERMISSION.send(player);
             return;
         }
 

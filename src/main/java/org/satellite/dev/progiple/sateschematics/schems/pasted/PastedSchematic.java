@@ -2,14 +2,21 @@ package org.satellite.dev.progiple.sateschematics.schems.pasted;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
+import org.satellite.dev.progiple.sateschematics.SateSchematics;
+import org.satellite.dev.progiple.sateschematics.schems.BlockPriority;
 import org.satellite.dev.progiple.sateschematics.schems.events.PasteSchematicEvent;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
@@ -54,17 +61,57 @@ public class PastedSchematic {
     public void undo() {
         List<PastedBlock> blocks = new ArrayList<>(this.pastedBlocks);
         blocks.sort(Comparator.comparingInt(b -> {
-                    Material m = b.previousState().getMaterial();
-                    if (m.hasGravity() || !m.isSolid()) return 0;
-                    if (m.name().contains("SIGN") ||
-                            m.name().contains("DOOR") ||
-                            m.name().contains("BUTTON") ||
-                            m.name().contains("TORCH")) return 0;
-                    return 1;
+                    return BlockPriority.getBlockPriority(b.previousState().getMaterial());
                 })
         );
-        blocks.forEach(b -> b.nowBlock().setBlockData(b.previousState()));
+
+        for (PastedBlock b : blocks) {
+            Location loc = b.nowBlock().getLocation();
+
+            loc.getBlock().setType(Material.AIR, false);
+            if (loc.getBlock().getState() instanceof TileState tileState) {
+                tileState.update(true, false);
+            }
+
+            loc.getBlock().setBlockData(b.previousState(), false);
+        }
+
         PastedManager.unload(this);
+    }
+
+    public CompletableFuture<Void> undoAsync() {
+        return CompletableFuture.runAsync(() -> {
+            if (pastedBlocks.isEmpty()) {
+                PastedManager.unload(this);
+                return;
+            }
+
+            Map<Chunk, List<PastedBlock>> blocksByChunk = pastedBlocks.stream()
+                    .sorted(Comparator.comparingInt(b -> BlockPriority.getBlockPriority(b.previousState().getMaterial())))
+                    .collect(Collectors.groupingBy(b -> b.nowBlock().getLocation().getChunk()));
+
+            for (Map.Entry<Chunk, List<PastedBlock>> entry : blocksByChunk.entrySet()) {
+                Chunk chunk = entry.getKey();
+                List<PastedBlock> chunkBlocks = entry.getValue();
+
+                Bukkit.getScheduler().runTask(SateSchematics.getINSTANCE(), () -> {
+                    for (PastedBlock b : chunkBlocks) {
+                        Location loc = b.nowBlock().getLocation();
+                        loc.getBlock().setBlockData(b.previousState(), false);
+                    }
+                    chunk.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
+                });
+
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+
+            PastedManager.unload(this);
+        });
     }
 
     public ConfigurationSection save(ConfigurationSection target) {

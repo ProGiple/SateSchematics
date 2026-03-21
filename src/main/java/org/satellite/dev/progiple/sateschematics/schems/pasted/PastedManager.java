@@ -7,6 +7,7 @@ import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -18,11 +19,15 @@ public class PastedManager {
         return schematic.paste(center, filter);
     }
 
-    public void load(PastedSchematic schematic) {
+    public CompletableFuture<PastedSchematic> pasteAsync(YAMLSchematic schematic, Location center, Function<SchemBlock, Boolean> filter) {
+        return schematic.pasteAsync(center, filter);
+    }
+
+    public synchronized void load(PastedSchematic schematic) {
         schematics.add(schematic);
     }
 
-    public void unload(PastedSchematic schematic) {
+    public synchronized void unload(PastedSchematic schematic) {
         schematics.remove(schematic);
     }
 

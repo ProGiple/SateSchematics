@@ -6,7 +6,7 @@
 
   <groupId>org.satellite.dev.progiple</groupId>
   <artifactId>SateSchematics</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <packaging>jar</packaging>
 
   <name>SateSchematics</name>
@@ -74,7 +74,7 @@
       <dependency>
           <groupId>com.github.NovaSparkle</groupId>
           <artifactId>LunaSpring</artifactId>
-          <version>3.12</version>
+          <version>3.14</version>
           <scope>provided</scope>
       </dependency>
       <dependency>

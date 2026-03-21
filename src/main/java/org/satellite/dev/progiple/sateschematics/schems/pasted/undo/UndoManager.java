@@ -45,11 +45,11 @@ public class UndoManager {
         return session.undo();
     }
 
-    public boolean clear(UUID uuid) {
+    public boolean undoAll(UUID uuid) {
         UndoSession session = getSession(uuid);
         if (session == null) return false;
 
-        session.clear();
+        session.undoAll();
         return true;
     }
 }
