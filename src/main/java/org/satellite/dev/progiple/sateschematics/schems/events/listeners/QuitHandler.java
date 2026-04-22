@@ -10,6 +10,7 @@ public class QuitHandler implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
-        if (SchematicManager.getLocationMap().containsKey(player)) SchematicManager.getLocationMap().remove(player);
+        if (SchematicManager.getLocationMap().containsKey(player))
+            SchematicManager.getLocationMap().remove(player);
     }
 }

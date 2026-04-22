@@ -39,7 +39,8 @@ public class Settings {
 
     public void save(ConfigurationSection baseSection) {
         baseSection.set("ignoreAir", this.ignoreAir);
-        baseSection.set("ignoredMaterials", this.ignoredMaterials);
+        baseSection.set("ignoredMaterials",
+                this.ignoredMaterials.stream().map(Material::name).collect(Collectors.toList()));
 
         ConfigurationSection offsets = baseSection.createSection("offsets");
         offsets.set("x", this.offsetX);

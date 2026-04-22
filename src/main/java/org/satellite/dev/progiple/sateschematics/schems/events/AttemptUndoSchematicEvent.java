@@ -8,10 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-@Getter @RequiredArgsConstructor
+@Getter
 public class AttemptUndoSchematicEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final UUID uuid;
+    public AttemptUndoSchematicEvent(UUID uuid, boolean isAsync) {
+        super(isAsync);
+        this.uuid = uuid;
+    }
 
     @Override
     public @NotNull HandlerList getHandlers() {

@@ -7,11 +7,16 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 
-@Getter @RequiredArgsConstructor
+@Getter
 public class PasteSchematicEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     private final PastedSchematic pastedSchematic;
+
+    public PasteSchematicEvent(PastedSchematic pastedSchematic) {
+        super(true);
+        this.pastedSchematic = pastedSchematic;
+    }
 
     @Override
     public @NotNull HandlerList getHandlers() {

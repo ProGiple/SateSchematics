@@ -15,7 +15,7 @@ public class UndoSchematicEvent extends AttemptUndoSchematicEvent implements Can
     private boolean isCancelled;
     private final PastedSchematic pastedSchematic;
     public UndoSchematicEvent(UUID who, PastedSchematic schematic) {
-        super(who);
+        super(who, false);
         this.pastedSchematic = schematic;
     }
 

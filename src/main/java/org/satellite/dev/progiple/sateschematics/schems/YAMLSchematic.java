@@ -2,22 +2,26 @@ package org.satellite.dev.progiple.sateschematics.schems;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.novasparkle.lunaspring.API.configuration.Configuration;
+import org.novasparkle.lunaspring.API.util.utilities.LunaMath;
+import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.SateSchematics;
-import org.satellite.dev.progiple.sateschematics.schems.events.PrePasteSchematicEvent;
-import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedBlock;
+import org.satellite.dev.progiple.sateschematics.schems.events.PrePasteSchematicAsyncEvent;
 import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,6 +40,15 @@ public class YAMLSchematic {
     @Setter private Settings settings;
     private boolean maySaving;
     public YAMLSchematic(Location pos1, Location pos2, Location center, String id) {
+        this(pos1, pos2, center, id, new HashSet<>());
+        Iterator<Block> iterator = SchematicManager.getBlocksBetween(pos1, pos2);
+        while (iterator.hasNext()) {
+            Block block = iterator.next();
+            this.schemBlocks.add(new SchemBlock(block, center));
+        }
+    }
+
+    public YAMLSchematic(Location pos1, Location pos2, Location center, String id, Set<SchemBlock> schemBlocks) {
         this.id = id;
         if (pos1.getY() > pos2.getY()) {
             Location memoryPos = pos1.clone();
@@ -49,10 +62,7 @@ public class YAMLSchematic {
         File file = new File(SateSchematics.getInstance().getDataFolder(), String.format("schematics/%s.yml", id));
         this.config = new Configuration(file);
 
-        this.schemBlocks = SchematicManager.getBlocksBetween(pos1, pos2)
-                .stream()
-                .map(b -> new SchemBlock(b.getBlock(), center))
-                .collect(Collectors.toSet());
+        this.schemBlocks = schemBlocks;
         this.maySaving = true;
         this.settings = new Settings();
     }
@@ -72,11 +82,29 @@ public class YAMLSchematic {
         this.minVector = SchematicManager.stringToVector(this.config.getString("minVector"));
         this.maxVector = SchematicManager.stringToVector(this.config.getString("maxVector"));
 
-        ConfigurationSection vectorSection = this.config.getSection("vectors");
-        this.schemBlocks = vectorSection.getKeys(false)
-                .stream()
-                .map(k -> new SchemBlock(Objects.requireNonNull(vectorSection.getConfigurationSection(k))))
-                .collect(Collectors.toSet());
+        ConfigurationSection palette = this.config.getSection("palette");
+        this.schemBlocks = new HashSet<>();
+
+        var blocks = this.config.getStringList("blocks");
+        for (String block : blocks) {
+            String[] split = block.split(";");
+            if (split.length < 4) continue;
+
+            String id = split[3];
+            String strData = palette.getString(id);
+
+            Vector vector = new Vector(
+                    LunaMath.toInt(split[0]),
+                    LunaMath.toInt(split[1]),
+                    LunaMath.toInt(split[2]));
+
+            EntityType et = split.length >= 5 ?
+                    Utils.getEnumValue(EntityType.class, split[4]) :
+                    null;
+            SchemBlock schemBlock = new SchemBlock(strData, vector, et);
+            this.schemBlocks.add(schemBlock);
+        }
+
         this.maySaving = false;
         this.settings = new Settings().load(this.config.getSection("settings"));
     }
@@ -103,58 +131,84 @@ public class YAMLSchematic {
         this.config.setString("minVector", SchematicManager.vectorToString(this.minVector));
         this.config.setString("maxVector", SchematicManager.vectorToString(this.maxVector));
 
-        ConfigurationSection section = this.config.getSection("settings");
-        if (section == null) section = this.config.createSection((String) null, "settings");
-        this.settings.save(section);
+        ConfigurationSection settings = this.config.createSection((String) null, "settings");
+        this.settings.save(settings);
 
-        ConfigurationSection parentSection = this.config.getSection("vectors");
-        if (parentSection == null) parentSection = this.config.createSection((String) null, "vectors");
+        ConfigurationSection palette = this.config.createSection((String) null, "palette");
+        int paletteId = 0;
+        Map<String, Integer> paletteBlockDates = new HashMap<>();
 
-        ConfigurationSection finalParentSection = parentSection;
-        this.schemBlocks.forEach(s -> s.createSection(finalParentSection));
+        List<String> blocks = new ArrayList<>();
+        for (SchemBlock schemBlock : this.schemBlocks) {
+            if (schemBlock.getBlockData() == null) continue;
 
+            String strData = schemBlock.getBlockData().getAsString();
+            int id = paletteBlockDates.getOrDefault(strData, -1);
+            if (id == -1) {
+                id = paletteId++;
+                paletteBlockDates.put(strData, id);
+                palette.set(String.valueOf(id), strData);
+            }
+
+            String line = schemBlock.vectorToString() + ";" + id;
+            if (schemBlock.getSpawnerType() != null) line += ";" + schemBlock.getSpawnerType().name();
+
+            blocks.add(line);
+        }
+
+        this.config.setStringList("blocks", blocks);
         this.config.save();
+
         this.maySaving = false;
         return true;
     }
 
-    public PastedSchematic paste(Location pasteLoc, Function<SchemBlock, Boolean> filter) {
-        if (pasteLoc == null || pasteLoc.getWorld() == null) {
-            throw new IllegalArgumentException("Invalid paste location");
-        }
+    public CompletableFuture<Boolean> saveAsync() {
+        return CompletableFuture.supplyAsync(this::save);
+    }
 
-        Location offsetLocation = this.getOffsetLocation(pasteLoc.clone());
-
-        PrePasteSchematicEvent schematicEvent = new PrePasteSchematicEvent(this, pasteLoc, filter);
-        if (!schematicEvent.callEvent() || schematicEvent.isCancelled()) {
-            return null;
-        }
-
-        Set<Material> ignoredMaterials = this.settings != null && this.settings.isIgnoreAir() ?
-                this.settings.getIgnoredMaterials() :
-                null;
-
+    public Stream<SchemBlock> collectPasteBlocks(Function<SchemBlock, Boolean> filter) {
         boolean ignoreAir = this.settings != null && this.settings.isIgnoreAir();
+        Set<Material> ignoredMaterials = this.settings == null ? null : this.settings.getIgnoredMaterials();
+
         boolean hasFilter = filter != null;
+        boolean hasIgnoredMaterials = ignoredMaterials != null && !ignoredMaterials.isEmpty();
 
         Stream<SchemBlock> stream = this.schemBlocks.size() >= PARALLELED_SIZE ?
                 this.schemBlocks.parallelStream() :
                 this.schemBlocks.stream();
-        Set<PastedBlock> blocks = stream
+        return stream
                 .filter(schemBlock -> {
-                    if (ignoreAir && schemBlock.getMaterial().isAir()) {
+                    Material material = schemBlock.getBlockData().getMaterial();
+                    if (ignoreAir && material.isAir()) {
                         return false;
                     }
 
-                    if (ignoredMaterials != null &&
-                            ignoredMaterials.contains(schemBlock.getMaterial())) {
+                    if (hasIgnoredMaterials && ignoredMaterials.contains(material)) {
                         return false;
                     }
 
                     return !hasFilter || filter.apply(schemBlock);
-                })
+                });
+    }
+
+    protected boolean invokeEvent(Location pasteLoc, Function<SchemBlock, Boolean> filter) {
+        PrePasteSchematicAsyncEvent schematicEvent = new PrePasteSchematicAsyncEvent(this, pasteLoc, filter);
+        return schematicEvent.callEvent() && !schematicEvent.isCancelled();
+    }
+
+    @Nullable
+    public PastedSchematic paste(Location pasteLoc, Function<SchemBlock, Boolean> filter) {
+        if (!invokeEvent(pasteLoc, filter)) return null;
+        return rawPaste(collectPasteBlocks(filter), pasteLoc);
+    }
+
+    @Nullable
+    protected PastedSchematic rawPaste(Stream<SchemBlock> stream, Location pasteLoc) {
+        Location offsetLocation = this.getOffsetLocation(pasteLoc);
+        var blocks = stream
                 .map(s -> s.paste(offsetLocation))
-                .collect(Collectors.toCollection(() -> new HashSet<>(this.schemBlocks.size())));
+                .collect(Collectors.toCollection(HashSet::new));
 
         if (blocks.isEmpty()) {
             return null;
@@ -163,13 +217,29 @@ public class YAMLSchematic {
         return new PastedSchematic(pasteLoc, blocks, this.id);
     }
 
+    @NotNull
     public CompletableFuture<PastedSchematic> pasteAsync(Location pasteLoc,
                                                          Function<SchemBlock, Boolean> filter) {
-        return CompletableFuture.supplyAsync(() -> paste(pasteLoc, filter));
+        if (!invokeEvent(pasteLoc, filter)) return CompletableFuture.completedFuture(null);
+        return CompletableFuture
+                .supplyAsync(() -> collectPasteBlocks(filter))
+                .thenApplyAsync(
+                        s -> rawPaste(s, pasteLoc),
+                        r -> Bukkit.getScheduler().runTask(SateSchematics.getInstance(), r));
     }
 
-    public Location getOffsetLocation(Location pasteLocation) {
-        return pasteLocation.clone().add(this.settings.getOffsetX(), this.settings.getOffsetY(), this.settings.getOffsetZ());
+    public Location getOffsetLocation(Location pasteLocation) throws IllegalStateException {
+        if (pasteLocation == null || pasteLocation.getWorld() == null) {
+            throw new IllegalArgumentException("Invalid paste location");
+        }
+
+        return pasteLocation
+                .clone()
+                .add(
+                        this.settings.getOffsetX(),
+                        this.settings.getOffsetY(),
+                        this.settings.getOffsetZ()
+                );
     }
 
     public enum SaveMode {

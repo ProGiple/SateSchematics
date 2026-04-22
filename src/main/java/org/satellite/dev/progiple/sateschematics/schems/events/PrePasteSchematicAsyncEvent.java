@@ -1,7 +1,6 @@
 package org.satellite.dev.progiple.sateschematics.schems.events;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -12,14 +11,21 @@ import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
 
 import java.util.function.Function;
 
-@Getter @RequiredArgsConstructor
-public class PrePasteSchematicEvent extends Event implements Cancellable {
+@Getter
+public class PrePasteSchematicAsyncEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
     private final YAMLSchematic schematic;
     private final Location pasteLocation;
     private final Function<SchemBlock, Boolean> filter;
+
+    public PrePasteSchematicAsyncEvent(YAMLSchematic schematic, Location pasteLocation, Function<SchemBlock, Boolean> filter) {
+        super(true);
+        this.schematic = schematic;
+        this.pasteLocation = pasteLocation;
+        this.filter = filter;
+    }
 
     @Override
     public void setCancelled(boolean b) {

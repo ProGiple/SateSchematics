@@ -46,9 +46,7 @@ public class SaveSubCommand implements LunaExecutor {
         }
 
         Config.sendMessage(player, "save", "id-%-" + strings[1]);
-        Bukkit.getScheduler().runTaskAsynchronously(SateSchematics.getInstance(), () -> {
-            SchematicManager.save(schematic);
-        });
+        SchematicManager.saveAsync(schematic);
     }
 
     @Override

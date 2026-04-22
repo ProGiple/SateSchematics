@@ -23,7 +23,7 @@ public class UndoSession {
 
     public boolean undo() {
         if (this.pastedSchematics.isEmpty()) {
-            AttemptUndoSchematicEvent schematicEvent = new AttemptUndoSchematicEvent(this.uuid);
+            AttemptUndoSchematicEvent schematicEvent = new AttemptUndoSchematicEvent(this.uuid, true);
             Bukkit.getPluginManager().callEvent(schematicEvent);
 
             return false;

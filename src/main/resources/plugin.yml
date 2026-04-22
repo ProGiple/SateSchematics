@@ -37,3 +37,5 @@ permissions:
     default: op
   sateschematics.load:
     default: op
+  sateschematics.edit:
+    default: op
