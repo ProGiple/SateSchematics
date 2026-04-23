@@ -8,6 +8,8 @@ org\satellite\dev\progiple\sateschematics\commands\UndoSubCommand.class
 org\satellite\dev\progiple\sateschematics\commands\pos\Pos2SubCommand.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\PastedManager.class
 org\satellite\dev\progiple\sateschematics\schems\YAMLSchematic.class
+org\satellite\dev\progiple\sateschematics\commands\LoadSubCommand.class
+org\satellite\dev\progiple\sateschematics\schems\states\SchematicManager$1.class
 org\satellite\dev\progiple\sateschematics\schems\events\PrePasteSchematicEvent.class
 org\satellite\dev\progiple\sateschematics\schems\events\PlayerSelectPosEvent.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\undo\UndoSession.class
@@ -18,6 +20,7 @@ org\satellite\dev\progiple\sateschematics\commands\pos\PosSubCommand.class
 org\satellite\dev\progiple\sateschematics\commands\UnloadSubCommand.class
 org\satellite\dev\progiple\sateschematics\schems\states\SchematicManager.class
 org\satellite\dev\progiple\sateschematics\schems\YAMLSchematic$SaveMode.class
+org\satellite\dev\progiple\sateschematics\commands\SettingsEditSubCommand.class
 org\satellite\dev\progiple\sateschematics\Config.class
 org\satellite\dev\progiple\sateschematics\schems\pasted\PastedBlock.class
 org\satellite\dev\progiple\sateschematics\schems\events\listeners\InteractHandler.class

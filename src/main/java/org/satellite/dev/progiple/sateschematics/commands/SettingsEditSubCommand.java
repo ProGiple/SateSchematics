@@ -1,6 +1,7 @@
 package org.satellite.dev.progiple.sateschematics.commands;
 
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.novasparkle.lunaspring.API.commands.LunaExecutor;
 import org.novasparkle.lunaspring.API.commands.annotations.Permissions;

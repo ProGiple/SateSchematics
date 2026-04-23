@@ -1,6 +1,7 @@
 package org.satellite.dev.progiple.sateschematics.schems.events;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -17,7 +18,7 @@ public class PlayerSelectPosEvent extends PlayerEvent implements Cancellable {
 
     private boolean isCancelled = false;
     public PlayerSelectPosEvent(@NotNull Player who, Location location, boolean isFirstPoint) {
-        super(who);
+        super(who, !Bukkit.isPrimaryThread());
         this.selectedPos = location;
         this.isFirstPoint = isFirstPoint;
     }

@@ -1,6 +1,7 @@
 package org.satellite.dev.progiple.sateschematics.schems.events;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ public class UndoSchematicEvent extends AttemptUndoSchematicEvent implements Can
     private boolean isCancelled;
     private final PastedSchematic pastedSchematic;
     public UndoSchematicEvent(UUID who, PastedSchematic schematic) {
-        super(who, false);
+        super(who);
         this.pastedSchematic = schematic;
     }
 

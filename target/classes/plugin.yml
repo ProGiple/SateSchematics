@@ -1,5 +1,5 @@
 name: SateSchematics
-version: '1.0.10'
+version: '2.0.0'
 main: org.satellite.dev.progiple.sateschematics.SateSchematics
 api-version: '1.16'
 authors: [ProGiple]
@@ -36,4 +36,6 @@ permissions:
   sateschematics.undo:
     default: op
   sateschematics.load:
+    default: op
+  sateschematics.edit:
     default: op

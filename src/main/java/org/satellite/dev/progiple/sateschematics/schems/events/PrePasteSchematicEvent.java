@@ -12,7 +12,7 @@ import org.satellite.dev.progiple.sateschematics.schems.YAMLSchematic;
 import java.util.function.Function;
 
 @Getter
-public class PrePasteSchematicAsyncEvent extends Event implements Cancellable {
+public class PrePasteSchematicEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
@@ -20,8 +20,11 @@ public class PrePasteSchematicAsyncEvent extends Event implements Cancellable {
     private final Location pasteLocation;
     private final Function<SchemBlock, Boolean> filter;
 
-    public PrePasteSchematicAsyncEvent(YAMLSchematic schematic, Location pasteLocation, Function<SchemBlock, Boolean> filter) {
-        super(true);
+    public PrePasteSchematicEvent(YAMLSchematic schematic,
+                                  Location pasteLocation,
+                                  Function<SchemBlock, Boolean> filter,
+                                  boolean isAsync) {
+        super(isAsync);
         this.schematic = schematic;
         this.pasteLocation = pasteLocation;
         this.filter = filter;

@@ -2,6 +2,7 @@ package org.satellite.dev.progiple.sateschematics.schems.events;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ public class PasteSchematicEvent extends Event {
     private final PastedSchematic pastedSchematic;
 
     public PasteSchematicEvent(PastedSchematic pastedSchematic) {
-        super(true);
+        super(!Bukkit.isPrimaryThread());
         this.pastedSchematic = pastedSchematic;
     }
 

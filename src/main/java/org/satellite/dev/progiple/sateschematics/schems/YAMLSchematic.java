@@ -16,7 +16,7 @@ import org.novasparkle.lunaspring.API.configuration.Configuration;
 import org.novasparkle.lunaspring.API.util.utilities.LunaMath;
 import org.novasparkle.lunaspring.API.util.utilities.Utils;
 import org.satellite.dev.progiple.sateschematics.SateSchematics;
-import org.satellite.dev.progiple.sateschematics.schems.events.PrePasteSchematicAsyncEvent;
+import org.satellite.dev.progiple.sateschematics.schems.events.PrePasteSchematicEvent;
 import org.satellite.dev.progiple.sateschematics.schems.pasted.PastedSchematic;
 import org.satellite.dev.progiple.sateschematics.schems.states.SchematicManager;
 
@@ -193,7 +193,7 @@ public class YAMLSchematic {
     }
 
     protected boolean invokeEvent(Location pasteLoc, Function<SchemBlock, Boolean> filter) {
-        PrePasteSchematicAsyncEvent schematicEvent = new PrePasteSchematicAsyncEvent(this, pasteLoc, filter);
+        PrePasteSchematicEvent schematicEvent = new PrePasteSchematicEvent(this, pasteLoc, filter, !Bukkit.isPrimaryThread());
         return schematicEvent.callEvent() && !schematicEvent.isCancelled();
     }
 
